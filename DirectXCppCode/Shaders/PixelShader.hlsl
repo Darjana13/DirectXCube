@@ -15,16 +15,22 @@ SamplerState TextureSampler
 //--------------------------------------------------------------------------------------
 float4 main( VS_OUTPUT input ) : SV_Target
 {
-	float intens=mul(input.Normal,float4(0,-1,0,0));
+	/*float intens=mul(input.Normal,float4(0,-1,0,0));
+	float4 color;
+	color[0] = input.color[0];
+	color[1] = input.color[1];
+	color[2] = input.color[2];
+	color[3] = intens;
+	return color;*/
+
 	/*float4 color_from_pos;
 	color_from_pos[0] = input.Pos[0];
 	color_from_pos[1] = input.Pos[1];
 	color_from_pos[2] = input.Pos[2];
 	color_from_pos[3] = 1.0;*/
 
-	/*float2 texturecoor;
+	float2 texturecoor;
 	texturecoor[0] = input.color[0];
-	texturecoor[1] = 1-input.color[1];
-	return gTexture.Sample(TextureSampler, texturecoor);*/
-    return input.color;
+	texturecoor[1] = input.color[1];
+	return gTexture.Sample(TextureSampler, texturecoor);
 }

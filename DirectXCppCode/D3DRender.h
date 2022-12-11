@@ -49,7 +49,7 @@ public:
 		CComPtr<ID3D11Buffer> indexBuffer;
 		CComPtr<ID3D11ShaderResourceView> ColorTexRV;
 
-		enum class UnitType{ Triangle, Square } uType;
+		enum class UnitType{ Triangle, Square, Cube } uType;
 		UINT IndexCount;
 	};
 protected:
@@ -58,6 +58,7 @@ protected:
 			DirectX::XMFLOAT3 Pos;
 			DirectX::XMFLOAT3 Normal;
 			DirectX::XMFLOAT4 Color;
+			//DirectX::XMFLOAT2 Tex;   // Координаты текстуры tu, tv
 		};
 	struct ConstantBufferStruct
 	{
@@ -305,7 +306,7 @@ public:
 			context->DrawIndexed(unit.IndexCount, 0, 0);
 		}
 		break;
-		case RenderingUnit::UnitType::Square:
+		case RenderingUnit::UnitType::Cube:
 		{
 			UINT stride = sizeof(VertexForColorTriangle);
 			UINT offset = 0;
@@ -331,7 +332,9 @@ public:
 		case 3:
 			unit.uType = RenderingUnit::UnitType::Triangle;
 			break;
-
+		case 8:
+			unit.uType = RenderingUnit::UnitType::Cube;
+			break;
 		default:
 			break;
 		}
@@ -379,21 +382,23 @@ public:
 				{	
 					vertarray[ver].Color=Col;
 				}
-				else
+
+				/*else
 				{
-					if(vertarray[ver].Color.x != Col.x ||  vertarray[ver].Color.y != Col.z || vertarray[ver].Color.z != Col.z || vertarray[ver].Color.w != Col.w)
+					if (vertarray[ver].Color.x != Col.x || vertarray[ver].Color.y != Col.y || vertarray[ver].Color.z != Col.z || vertarray[ver].Color.w != Col.w)
 					{
 						int newver = (int) vertarray.size();
 						vertarray.push_back(vertarray[ver]);
 						vertarray[newver].Color=Col;
 						indexarray[i*3+j]=newver;
 					}
-				}
+				}*/
 			}
 		}
 
 		CD3D11_BUFFER_DESC bufferDesc((int) vertarray.size() * sizeof(VertexForColorTriangle), D3D11_BIND_VERTEX_BUFFER);
 		D3D11_SUBRESOURCE_DATA data;
+
 		data.pSysMem = vertarray.data();
 		data.SysMemPitch = 0;
 		data.SysMemSlicePitch = 0;
@@ -410,6 +415,101 @@ public:
 		return unit;
 	}
 	
+	RenderingUnit CreateCubeColorUnit(std::vector<std::array<double, 3>>& all_points) 
+	{
+		RenderingUnit unit;
+		switch (all_points.size())
+		{
+		case 8:
+			unit.uType = RenderingUnit::UnitType::Cube;
+			break;
+		default:
+			break;
+		}
+		unit.IndexCount = 36;
+		if (unit.IndexCount == 0)return unit;
+
+		std::vector<VertexForColorTriangle> vertarray(24);
+		/*DirectX::XMFLOAT3 Pos;
+		DirectX::XMFLOAT3 Normal;
+		DirectX::XMFLOAT4 Color;*/
+		std::vector<DWORD> indexarray(36);
+		vertarray =
+		{
+			{DirectX::XMFLOAT3(all_points[0][0], all_points[0][1], all_points[0][2]), DirectX::XMFLOAT3(-1, +0, +0), DirectX::XMFLOAT4(0, 0, 0, 0)},
+			{DirectX::XMFLOAT3(all_points[2][0], all_points[2][1], all_points[2][2]), DirectX::XMFLOAT3(-1, +0, +0), DirectX::XMFLOAT4(0, 1, 0, 0)},
+			{DirectX::XMFLOAT3(all_points[4][0], all_points[4][1], all_points[4][2]), DirectX::XMFLOAT3(-1, +0, +0), DirectX::XMFLOAT4(1, 0, 0, 0)},
+			{DirectX::XMFLOAT3(all_points[6][0], all_points[6][1], all_points[6][2]), DirectX::XMFLOAT3(-1, +0, +0), DirectX::XMFLOAT4(1, 1, 0, 0)},
+
+			{DirectX::XMFLOAT3(all_points[5][0], all_points[5][1], all_points[5][2]), DirectX::XMFLOAT3(+1, +0, +0), DirectX::XMFLOAT4(1, 0, 0, 0)},
+			{DirectX::XMFLOAT3(all_points[7][0], all_points[7][1], all_points[7][2]), DirectX::XMFLOAT3(+1, +0, +0), DirectX::XMFLOAT4(0, 0, 0, 0)},
+			{DirectX::XMFLOAT3(all_points[3][0], all_points[3][1], all_points[3][2]), DirectX::XMFLOAT3(+1, +0, +0), DirectX::XMFLOAT4(0, 1, 0, 0)},
+			{DirectX::XMFLOAT3(all_points[1][0], all_points[1][1], all_points[1][2]), DirectX::XMFLOAT3(+1, +0, +0), DirectX::XMFLOAT4(1, 1, 0, 0)},
+
+			{DirectX::XMFLOAT3(all_points[5][0], all_points[5][1], all_points[5][2]), DirectX::XMFLOAT3(+0, -1, +0), DirectX::XMFLOAT4(1, 0, 0, 0)},
+			{DirectX::XMFLOAT3(all_points[1][0], all_points[1][1], all_points[1][2]), DirectX::XMFLOAT3(+0, -1, +0), DirectX::XMFLOAT4(0, 0, 0, 0)},
+			{DirectX::XMFLOAT3(all_points[0][0], all_points[0][1], all_points[0][2]), DirectX::XMFLOAT3(+0, -1, +0), DirectX::XMFLOAT4(0, 1, 0, 0)},
+			{DirectX::XMFLOAT3(all_points[4][0], all_points[4][1], all_points[4][2]), DirectX::XMFLOAT3(+0, -1, +0), DirectX::XMFLOAT4(1, 1, 0, 0)},
+
+			{DirectX::XMFLOAT3(all_points[7][0], all_points[7][1], all_points[7][2]), DirectX::XMFLOAT3(+0, +1, +0), DirectX::XMFLOAT4(1, 0, 0, 0)},
+			{DirectX::XMFLOAT3(all_points[6][0], all_points[6][1], all_points[6][2]), DirectX::XMFLOAT3(+0, +1, +0), DirectX::XMFLOAT4(0, 0, 0, 0)},
+			{DirectX::XMFLOAT3(all_points[2][0], all_points[2][1], all_points[2][2]), DirectX::XMFLOAT3(+0, +1, +0), DirectX::XMFLOAT4(0, 1, 0, 0)},
+			{DirectX::XMFLOAT3(all_points[3][0], all_points[3][1], all_points[3][2]), DirectX::XMFLOAT3(+0, +1, +0), DirectX::XMFLOAT4(1, 1, 0, 0)},
+
+			{DirectX::XMFLOAT3(all_points[0][0], all_points[0][1], all_points[0][2]), DirectX::XMFLOAT3(+0, +0, -1), DirectX::XMFLOAT4(0, 1, 0, 0)},
+			{DirectX::XMFLOAT3(all_points[2][0], all_points[2][1], all_points[2][2]), DirectX::XMFLOAT3(+0, +0, -1), DirectX::XMFLOAT4(0, 0, 0, 0)},
+			{DirectX::XMFLOAT3(all_points[3][0], all_points[3][1], all_points[3][2]), DirectX::XMFLOAT3(+0, +0, -1), DirectX::XMFLOAT4(1, 0, 0, 0)},
+			{DirectX::XMFLOAT3(all_points[1][0], all_points[1][1], all_points[1][2]), DirectX::XMFLOAT3(+0, +0, -1), DirectX::XMFLOAT4(1, 1, 0, 0)},
+
+			{DirectX::XMFLOAT3(all_points[5][0], all_points[5][1], all_points[5][2]), DirectX::XMFLOAT3(+0, +0, +1), DirectX::XMFLOAT4(1, 0, 0, 0)},
+			{DirectX::XMFLOAT3(all_points[7][0], all_points[7][1], all_points[7][2]), DirectX::XMFLOAT3(+0, +0, +1), DirectX::XMFLOAT4(0, 0, 0, 0)},
+			{DirectX::XMFLOAT3(all_points[6][0], all_points[6][1], all_points[6][2]), DirectX::XMFLOAT3(+0, +0, +1), DirectX::XMFLOAT4(0, 1, 0, 0)},
+			{DirectX::XMFLOAT3(all_points[4][0], all_points[4][1], all_points[4][2]), DirectX::XMFLOAT3(+0, +0, +1), DirectX::XMFLOAT4(1, 1, 0, 0)},
+
+		};
+		
+		indexarray =
+		{
+			0, 1, 2,
+			2, 1, 3,
+
+			4, 5, 6,
+			6, 7, 4,
+
+			8, 9, 10,
+			10, 11, 8,
+
+			12, 13, 14,
+			14, 15, 12,
+
+			16, 17, 18,
+			18, 19, 16,
+
+			20, 21, 22,
+			22, 23, 20
+		};
+
+		
+		CD3D11_BUFFER_DESC bufferDesc((int)vertarray.size() * sizeof(VertexForColorTriangle), D3D11_BIND_VERTEX_BUFFER);
+		D3D11_SUBRESOURCE_DATA data;
+
+		data.pSysMem = vertarray.data();
+		data.SysMemPitch = 0;
+		data.SysMemSlicePitch = 0;
+		CheckHR(device->CreateBuffer(&bufferDesc, &data, &unit.vertexBuffer));
+
+		{
+			CD3D11_BUFFER_DESC bufferDesc((int)indexarray.size() * sizeof(DWORD), D3D11_BIND_INDEX_BUFFER);
+			D3D11_SUBRESOURCE_DATA data;
+			data.pSysMem = indexarray.data();
+			data.SysMemPitch = 0;
+			data.SysMemSlicePitch = 0;
+			CheckHR(device->CreateBuffer(&bufferDesc, &data, &unit.indexBuffer));
+		}
+		return unit;
+	}
+
+
 	void RenderScene(std::vector<RenderingUnit>& scene)
 	{
 		UpdateProectionsAndLightingData();

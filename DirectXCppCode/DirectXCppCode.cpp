@@ -100,7 +100,7 @@ CPP_API void PrepareScene(int handle, int w, int h)
 		all_points[6] = { -0.5, 0.5, 0.5 };
 		all_points[7] = { 0.5, 0.5, 0.5 };*/
 
-		vector<array<double, 3>> all_normals;
+		/*vector<array<double, 3>> all_normals;
 		all_normals.resize(8);
 		all_normals[0] = { -1, -1, +1 };
 		all_normals[1] = { +1, -1, +1 };
@@ -123,75 +123,18 @@ CPP_API void PrepareScene(int handle, int w, int h)
 			{
 				all_normals[i][j] /= norm;
 			}			
-		}
+		}*/
 
-		for (int i_unit = 0; i_unit < 12; i_unit++)
+		/*for (int i_unit = 0; i_unit < 12; i_unit++)
 		{
 			vector<array<array<int, 3>, 2>> triangles;
 
 			array<array<int, 3>, 2> triangle;
 			triangle[0] = { 0,1,2 };         // порядок вершин
-			//triangle[1] = { 0, 0, 0 }; // цвет
-			switch (i_unit)
-			{
-			case 0:
-			case 1:
-				triangle[1] = { 128, 0, 128 };
-				break;
-			case 2:
-			case 3:
-				triangle[1] = { 0, 128, 128 };
-				break;
-			case 4:
-			case 5:
-				triangle[1] = { 128, 128, 0 };
-				break;
-			case 6:
-			case 7:
-				triangle[1] = { 0, 0, 128 };
-				break;
-			case 8:
-			case 9:
-				triangle[1] = { 0, 128, 0};
-				break;
-			case 10:
-			case 11:
-				triangle[1] = { 128, 0, 0 };
-				break;
-			default:
-				break;
-			}
-			/*switch (i_unit)
-			{
-			case 0:
-			case 1:
-				triangle[1] = { 128, 0, 128 };
-				break;
-			case 2:
-			case 3:
-				triangle[1] = { 0, 128, 128 };
-				break;
-			case 4:
-			case 5:
-				triangle[1] = { 128, 128, 0 };
-				break;
-			case 6:
-			case 7:
-				triangle[1] = { 0, 0, 128 };
-				break;
-			case 8:
-			case 9:
-				triangle[1] = { 0, 128, 0};
-				break;
-			case 10:
-			case 11:
-				triangle[1] = { 128, 0, 0 };
-				break;
-			default:
-				break;
-			}*/
+			triangle[1] = { 0, 0, 0 }; // цвет
 			triangles.push_back(triangle);
 
+			
 			vector<array<double, 3>> xyz;
 			xyz.resize(3);
 			switch (i_unit)
@@ -304,80 +247,16 @@ CPP_API void PrepareScene(int handle, int w, int h)
 			default:
 				break;
 			}
-			/*switch (i_unit)
-			{
-			case 0:
-				normals[0] = all_normals[0];
-				normals[1] = all_normals[2];
-				normals[2] = all_normals[4];
+			
 
-				break;
-			case 1:
-				normals[0] = all_normals[4];
-				normals[1] = all_normals[2];
-				normals[2] = all_normals[6];
-				break;
-			case 2:
-				normals[0] = all_normals[5];
-				normals[1] = all_normals[7];
-				normals[2] = all_normals[3];
-				break;
-			case 3:
-				normals[0] = all_normals[3];
-				normals[1] = all_normals[1];
-				normals[2] = all_normals[5];
-				break;
-			case 4:
-				normals[0] = all_normals[5];
-				normals[1] = all_normals[1];
-				normals[2] = all_normals[0];
-				break;
-			case 5:
-				normals[0] = all_normals[0];
-				normals[1] = all_normals[4];
-				normals[2] = all_normals[5];
-				break;
-			case 6:
-				normals[0] = all_normals[7];
-				normals[1] = all_normals[6];
-				normals[2] = all_normals[2];
-				break;
-			case 7:
-				normals[0] = all_normals[2];
-				normals[1] = all_normals[3];
-				normals[2] = all_normals[7];
-				break;
-			case 8:
-				normals[0] = all_normals[0];
-				normals[1] = all_normals[2];
-				normals[2] = all_normals[3];
-				break;
-			case 9:
-				normals[0] = all_normals[3];
-				normals[1] = all_normals[1];
-				normals[2] = all_normals[0];
-				break;
-			case 10:
-				normals[0] = all_normals[5];
-				normals[1] = all_normals[7];
-				normals[2] = all_normals[6];
-				break;
-			case 11:
-				normals[0] = all_normals[6];
-				normals[1] = all_normals[4];
-				normals[2] = all_normals[5];
-				break;
-			default:
-				break;
-			}*/
-
-			finded->second->RenderStart();
-
-			auto unit = finded->second->CreateTriangleColorUnit(triangles, xyz, normals);
-			finded->second->AddToSaved(unit);
-
-
-		}
+			//auto unit = finded->second->CreateTriangleColorUnit(triangles, xyz, normals);
+			//finded->second->AddToSaved(unit);
+		}*/
+		
+		finded->second->RenderStart();
+		//auto unit = finded->second->CreateTriangleColorUnit(triangles, xyz, normals);
+		auto unit = finded->second->CreateCubeColorUnit(all_points);
+		finded->second->AddToSaved(unit);
 
 		finded->second->RenderSavedData();
 		finded->second->EndRender();
